@@ -91,7 +91,7 @@ if not df.empty:
             lambda x: 'Work From Office' if x == 0 else 'Work From Home' if x == 100 else 'Hybrid'
         )
         if 'Annual Salary' in df.columns:
-            df['Annual Salary'] = df['Annual Salary'].replace('[\$,]', '', regex=True).astype(float)
+            df['Annual Salary'] = df['Annual Salary'].replace(r'[\$,]', '', regex=True).astype(float)
             logger.info(f"Annual Salary data type: {df['Annual Salary'].dtype}")
         else:
             logger.warning("Annual Salary column not found.")
