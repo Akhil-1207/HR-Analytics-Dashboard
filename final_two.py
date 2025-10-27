@@ -904,11 +904,26 @@ with row1_col1:
     st.plotly_chart(fig_remote, use_container_width=True)
 with row1_col2:
     st.markdown("**Performance Level Distribution by Job Title**")
+    
+    # Create tree_data DataFrame
     tree_data = filtered_df.groupby(['Job_Title', 'Performance_Level'])['Employee_ID'].count().reset_index() if not filtered_df.empty else pd.DataFrame()
+    
     tree_data.rename(columns={'Employee_ID': 'Number_of_Employees'}, inplace=True)
+    
+    # 🌟 FIX START: Explicitly set the Performance_Level as a Categorical type
+    if not tree_data.empty:
+        performance_categories = ['Low', 'Medium', 'High']
+        tree_data['Performance_Level'] = pd.Categorical(
+            tree_data['Performance_Level'], 
+            categories=performance_categories, 
+            ordered=True
+        )
+    # 🌟 FIX END
+    
     fig_tree = px.treemap(tree_data, path=['Job_Title', 'Performance_Level'], values='Number_of_Employees',
-                          color='Performance_Level',
-                          color_discrete_map={'Low': '#FF4040', 'Medium': '#FFA500', 'High': '#228B22'}) if not tree_data.empty else px.treemap()
+                             color='Performance_Level',
+                             color_discrete_map={'Low': '#FF4040', 'Medium': '#FFA500', 'High': '#228B22'}) if not tree_data.empty else px.treemap()
+    
     st.plotly_chart(fig_tree, use_container_width=True)
 with row1_col3:
     st.markdown("**Employee Count by Retention Risk Level and Job Title**")
