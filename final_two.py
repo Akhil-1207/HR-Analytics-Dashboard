@@ -902,35 +902,23 @@ with row1_col1:
     fig_remote = px.bar(remote_efficiency, x='Department', y='Productivity score', color='Remote_Work_Category',
                         barmode='group', color_discrete_map={'Work From Home': '#2B7A78', 'Work From Office': '#333333', 'Hybrid': '#228B22'}) if not remote_efficiency.empty else px.bar()
     st.plotly_chart(fig_remote, use_container_width=True)
+    
+# Around line 918-925, replace the existing treemap code with:
 with row1_col2:
     st.markdown("**Performance Level Distribution by Job Title**")
-    
-    # Create tree_data DataFrame
     tree_data = filtered_df.groupby(['Job_Title', 'Performance_Level'])['Employee_ID'].count().reset_index() if not filtered_df.empty else pd.DataFrame()
-    
     tree_data.rename(columns={'Employee_ID': 'Number_of_Employees'}, inplace=True)
     
-    # 🌟 ROBUST FIX START
+    # Fix: Ensure Performance_Level is string type, not categorical
     if not tree_data.empty:
-        # 1. Ensure the 'values' column is a clean integer
-        tree_data['Number_of_Employees'] = pd.to_numeric(tree_data['Number_of_Employees'], errors='coerce').fillna(0).astype(int)
-        
-        performance_categories = ['Low', 'Medium', 'High']
-        
-        # 2. Convert to string first to handle any potential mixed types or non-string values
         tree_data['Performance_Level'] = tree_data['Performance_Level'].astype(str)
-        
-        # 3. Finally, convert to an explicit ordered Categorical type
-        tree_data['Performance_Level'] = pd.Categorical(
-            tree_data['Performance_Level'], 
-            categories=performance_categories, 
-            ordered=True
-        )
-    # 🌟 ROBUST FIX END
-    
-    fig_tree = px.treemap(tree_data, path=['Job_Title', 'Performance_Level'], values='Number_of_Employees',
-                             color='Performance_Level',
-                             color_discrete_map={'Low': '#FF4040', 'Medium': '#FFA500', 'High': '#228B22'}) if not tree_data.empty else px.treemap()
+        fig_tree = px.treemap(tree_data, 
+                              path=['Job_Title', 'Performance_Level'], 
+                              values='Number_of_Employees',
+                              color='Performance_Level',
+                              color_discrete_map={'Low': '#FF4040', 'Medium': '#FFA500', 'High': '#228B22'})
+    else:
+        fig_tree = px.treemap()
     
     st.plotly_chart(fig_tree, use_container_width=True)
 with row1_col3:
