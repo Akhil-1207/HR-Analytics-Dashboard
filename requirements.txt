@@ -3,4 +3,5 @@ pandas>=2.2.2
 plotly>=5.24.0
 yagmail>=0.15.293
 fuzzywuzzy>=0.18.0
+
 streamlit-autorefresh>=0.0.1
