@@ -910,15 +910,23 @@ with row1_col2:
     
     tree_data.rename(columns={'Employee_ID': 'Number_of_Employees'}, inplace=True)
     
-    # 🌟 FIX START: Explicitly set the Performance_Level as a Categorical type
+    # 🌟 ROBUST FIX START
     if not tree_data.empty:
+        # 1. Ensure the 'values' column is a clean integer
+        tree_data['Number_of_Employees'] = pd.to_numeric(tree_data['Number_of_Employees'], errors='coerce').fillna(0).astype(int)
+        
         performance_categories = ['Low', 'Medium', 'High']
+        
+        # 2. Convert to string first to handle any potential mixed types or non-string values
+        tree_data['Performance_Level'] = tree_data['Performance_Level'].astype(str)
+        
+        # 3. Finally, convert to an explicit ordered Categorical type
         tree_data['Performance_Level'] = pd.Categorical(
             tree_data['Performance_Level'], 
             categories=performance_categories, 
             ordered=True
         )
-    # 🌟 FIX END
+    # 🌟 ROBUST FIX END
     
     fig_tree = px.treemap(tree_data, path=['Job_Title', 'Performance_Level'], values='Number_of_Employees',
                              color='Performance_Level',
